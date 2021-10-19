@@ -1,5 +1,5 @@
 // 引入css样式
-import 'antd/dist/antd.less';
+import 'antd/dist/antd.css';
 import './index.less';
 
 //引入fetch
@@ -32,5 +32,14 @@ app.router(require('./router').default);
 
 // 5. Start
 app.start('#main');
+
+
+import 'dva'
+
+declare module 'dva' {
+  interface DvaInstance {
+    _store: any
+  }
+}
 
 export default app._store;

@@ -1,14 +1,14 @@
 import * as React from "react";
-import { Router, Route, Switch } from "dva/router";
+import { Router, Route, Switch, RouterProps } from "react-router";
 
-import LoginComponent from "@/pages/Login/Login";
+import Login from "@/pages/Login/Login";
 import MainComponent from "@/components/layout/MainLayout";
 
-function RouterConfig({ history }) {
+function RouterConfig({ history }:RouterProps ) {
   return (
     <Router history={history}>
       <Switch>
-        <Route path="/login" component={LoginComponent} />
+        <Route path="/login" component={Login} />
         <Route path="/" component={MainComponent} />
       </Switch>
     </Router>

@@ -1,27 +1,28 @@
 import * as React from "react";
 import { useState } from "react";
-import { Layout, Menu, Icon, Breadcrumb } from "antd";
+import { Layout, Menu, Breadcrumb } from "antd";
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import "./mainLayout.less";
 import { Link, Route, Redirect } from "react-router-dom";
-import {withRouter} from "react-router";
-import routerConfig, { componentLink } from "@/config/routerConfig";
+import {withRouter, RouteProps} from "react-router";
+import routerConfig, { componentLink,RouterConfig } from "@/config/routerConfig";
 const {SubMenu} = Menu
 const { Header, Sider, Content } = Layout;
 
 
-const menuList = routerConfig.flatten(Infinity)
+const menuList = routerConfig.flat(Infinity)
 
-const MainLayout = ({location}) => {
+const MainLayout = ({location}: RouteProps) => {
  const [collapsed, setCollapsed] = useState(false)
  const [openKeys, setOpenKeys] = useState([])
  const { pathname } = location
 
- const getSelectedKeys=()=> {
+ const getSelectedKeys = (): string[] => {
     const keys = pathname.split("/").slice(1);
     return keys;
   }
-  const renderMenu = (menusData, parentPath)=> {
-    return menusData.filter(item => !item.hide).map((item, index) => {
+  const renderMenu = (menusData: RouterConfig[], parentPath: string)=> {  
+    return menusData.filter((item: RouterConfig) => !item.hide).map((item: RouterConfig, index: number) => {
       const { icon = "user", url, name } = item;
       const itemPath = `${parentPath}/${url || ""}`.replace(/\/+/g, "/");
       if (Array.isArray(item.children) && item.children.length > 0) {
@@ -29,7 +30,7 @@ const MainLayout = ({location}) => {
           <SubMenu
             title={
               <span>
-                <Icon type={icon} />
+                {/* <Icon type={icon} /> */}
                 {name}
               </span>
             }
@@ -40,17 +41,17 @@ const MainLayout = ({location}) => {
       } else {
         return (
           <Menu.Item key={url || index}>
-            <Icon type={icon} />
+            {/* <Icon type={icon} /> */}
             {collapsed ? null : <Link to={`${itemPath}`}>{name}</Link>}
           </Menu.Item>
         );
       }
     });
   }
-  const renderBread = (routerConfig, parentPath) => {
-    const pathArr = pathname.split("/").filter(item => item)
+  const renderBread = (routerConfig: RouterConfig[], parentPath:string)=> {
+    const pathArr = pathname.split("/").filter((item: string): boolean => Boolean(item))
     if (Array.isArray(routerConfig) && routerConfig.length > 0) {
-      return pathArr.map((item, index) => {
+      return pathArr.map((item: string, index: number) => {
         const currentIndex = routerConfig.findIndex(({ url }) => item == url)
         if (currentIndex > -1) {
           const { url, resourceNameCn } = routerConfig[currentIndex]
@@ -63,7 +64,7 @@ const MainLayout = ({location}) => {
       })
     }
   }
-  const renderComponents=(menusData, parentPath)=>{
+  const renderComponents=(menusData: RouterConfig[], parentPath: string)=>{
     const components = menusData.map((item, index) => {
       const { url } = item;
       const itemPath = `${parentPath}/${url || ""}`.replace(/\/+/g, "/");
@@ -90,7 +91,7 @@ const MainLayout = ({location}) => {
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={getSelectedKeys}
+          selectedKeys={getSelectedKeys()}
           openKeys={collapsed ? [] : openKeys}
           onOpenChange={setOpenKeys}
         >
@@ -99,11 +100,14 @@ const MainLayout = ({location}) => {
       </Sider>
       <Layout>
         <Header style={{ background: "#fff", padding: 0 }}>
-          <Icon
-            className="trigger"
-            type={collapsed ? "menu-unfold" : "menu-fold"}
+          <span
+            className="icon-wrap"
             onClick={()=>setCollapsed(!collapsed)}
-          />
+          >
+            {
+              collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
+            }
+          </span>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item href="/">首页</Breadcrumb.Item>
             {renderBread(menuList, "")}

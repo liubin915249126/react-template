@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === "production";
 const cssLoader = isProd ? MiniCssExtractPlugin.loader : "style-loader";
@@ -45,6 +46,7 @@ const config = {
       },
       {
         test: /\.less$/,
+        exclude: [/node_modules/, /^antd\/*/],
         use: [cssLoader, {
           loader: "css-loader",
           options: {
@@ -60,17 +62,21 @@ const config = {
         }],
       },
       {
-        test: /\.global\.less$/,
+        test: /\.css$/,
+        include: [/node_modules/, /^antd\/*/],
         use: [cssLoader, {
           loader: "css-loader",
-        }, {
-          loader: "less-loader",
+        }]
+      },
+      {
+        test: /\.css$/,
+        exclude: [/node_modules/, /^antd\/*/],
+        use: [cssLoader, {
+          loader: "css-loader",
           options: {
-            lessOptions: {
-              javascriptEnabled: true,
-            }
-          }
-        }],
+            modules: true,
+          },
+        }]
       },
       {//图片
         test: /\.(png|jpg|gif|svg|ico)$/i,//i不区分大小写
@@ -98,9 +104,9 @@ const config = {
   devServer: {
     historyApiFallback: true,
     port: 9009,
-    proxy: {
-      "/": { target: "http://localhost:3000", secure: false },
-    },
+    // proxy: {
+    //   "/": { target: "http://localhost: 9008", secure: false },
+    // },
   },
   optimization: {
     moduleIds: 'deterministic',
@@ -174,6 +180,7 @@ const config = {
       chunkFilename: "[id][contenthash].css",
     }),
     new CleanWebpackPlugin(),
+    new ESLintPlugin()
   ],
 };
 module.exports = config;
